@@ -7,7 +7,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,47 +16,59 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const CalendarWidget(notes: []),
+      home: const CalendarWidget(),
     );
   }
 }
 
-class CalendarWidget extends StatelessWidget {
+class CalendarWidget extends StatefulWidget {
   final List<Note>? notes;
 
-  const CalendarWidget({Key? key, required this.notes}) : super(key: key);
+  const CalendarWidget({Key? key, this.notes}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final List<Appointment> appointments = _getAppointments();
+  _CalendarWidgetState createState() => _CalendarWidgetState();
+}
 
+class _CalendarWidgetState extends State<CalendarWidget> {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Syncfusion Calendar'),
       ),
       body: SfCalendar(
         view: CalendarView.month,
-        dataSource: MyCalendarDataSource(appointments),
+        onTap: (CalendarTapDetails details) {
+          if (details.targetElement == CalendarElement.calendarCell) {
+            // Muestra la ventana modal para agregar una nota
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Agregar una nota'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text('Fecha seleccionada: ${details.date}'),
+                      const TextField(
+                        decoration: InputDecoration(labelText: 'Contenido de la nota'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Agrega aquí la lógica para guardar la nota
+                          Navigator.of(context).pop(); // Cierra la ventana modal
+                        },
+                        child: const Text('Guardar Nota'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+        },
       ),
     );
-  }
-
-  List<Appointment> _getAppointments() {
-    // Aquí puedes crear y retornar tus eventos de calendario
-    return [
-      Appointment(
-        startTime: DateTime.now(),
-        endTime: DateTime.now().add(const Duration(hours: 2)),
-        subject: 'Reunión importante',
-        color: Colors.blue,
-      ),
-      // Agrega más eventos aquí...
-    ];
-  }
-}
-
-class MyCalendarDataSource extends CalendarDataSource {
-  MyCalendarDataSource(List<Appointment> source) {
-    appointments = source;
   }
 }
