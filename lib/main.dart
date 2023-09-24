@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:note_app/screens/calendar_screen.dart'; // Importa el archivo que contiene CalendarScreen.
+import 'package:note_app/screens/notes_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Calendar App',
+      title: 'Note App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const CalendarScreen(), // Aquí utiliza CalendarScreen como página de inicio.
+      home: const NoteScreen(),
     );
   }
 }
